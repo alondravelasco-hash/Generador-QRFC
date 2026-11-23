@@ -3,153 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro | Foro Ciencia UDG</title>
+    <title>Generador de QR | Foro Ciencia UDG</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- QR Generator CDN Fiable -->
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/cd/Rector%C3%ADa_General_de_la_Universidad_de_Guadalajara.jpg'); background-size: cover; background-position: center; background-attachment: fixed; color: #ffffff; }
-        .bg-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(20, 10, 5, 0.8) 100%); z-index: -1; }
-        .glass-dark { background: rgba(44, 30, 22, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .light-input, select.light-input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 12px; padding: 12px 16px; width: 100%; appearance: none; }
-        .light-input:focus, select.light-input:focus { outline: none; border-color: #d99a73; background: rgba(255,255,255,0.15); }
-        select.light-input option { background: #2c1e16; color: white; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #3b302c;
+            color: #ffffff;
+        }
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #4a3e39 0%, #2b211e 100%);
+            z-index: -1;
+        }
+        .glass-dark {
+            background: rgba(44, 30, 22, 0.75);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        #qrcode img {
+            margin: 0 auto;
+            border-radius: 0.75rem;
+            border: 8px solid #ffffff;
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-overlay"></div>
-    
-    <div class="glass-dark p-8 rounded-3xl w-full max-w-md text-center">
-        <h1 class="text-3xl font-light mb-1">Foro Ciencia UDG</h1>
-        <p class="text-[#d99a73] text-sm mb-6 uppercase tracking-widest">Obtén tu Gafete QR</p>
 
-        <form id="form-general" onsubmit="generatePersonalQR(event)" class="space-y-4 text-left">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="bg-overlay"></div>
+
+    <div class="w-full max-w-md glass-dark p-6 md:p-8 rounded-[2rem]">
+        <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
             <div>
-                <label class="block text-xs uppercase text-white/60 mb-1 ml-1">Nombre Completo</label>
-                <input type="text" id="reg-name" required placeholder="Ej. Ana García" class="light-input">
+                <h1 class="text-2xl font-light">Pase Digital QR</h1>
+                <p class="text-[#d99a73] text-xs uppercase tracking-widest font-semibold">Foro Ciencia UDG</p>
             </div>
-            
+            <span id="db-status" class="px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                Conectando...
+            </span>
+        </div>
+
+        <form id="qr-form" class="space-y-4">
             <div>
-                <label class="block text-xs uppercase text-white/60 mb-1 ml-1">Tipo de Asistente</label>
-                <select id="reg-type" required class="light-input">
-                    <option value="" disabled selected>Selecciona una opción</option>
+                <label class="block text-xs uppercase tracking-wider text-white/70 mb-1">Nombre completo</label>
+                <input type="text" id="nombre" required placeholder="Ej. Ana López" class="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-white focus:outline-none focus:border-[#d99a73]">
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-white/70 mb-1">Tipo de asistente</label>
+                <select id="tipo" class="w-full px-4 py-3 rounded-xl bg-[#2b211e] border border-white/10 text-white focus:outline-none focus:border-[#d99a73]">
                     <option value="Estudiante">Estudiante</option>
-                    <option value="Docente">Docente</option>
-                    <option value="Visitante Externo">Visitante Externo</option>
+                    <option value="Ponente">Ponente</option>
+                    <option value="Investigador">Investigador</option>
+                    <option value="Público General">Público General</option>
+                    <option value="Staff">Staff</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-xs uppercase text-white/60 mb-1 ml-1">Organización o Centro Universitario</label>
-                <input type="text" id="reg-org" required placeholder="Ej. CUCEA, Empresa S.A..." class="light-input">
+                <label class="block text-xs uppercase tracking-wider text-white/70 mb-1">Organización / Escuela</label>
+                <input type="text" id="organizacion" required placeholder="Ej. UDG / CUCEI" class="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-white focus:outline-none focus:border-[#d99a73]">
             </div>
 
-            <div class="pt-2">
-                <label class="block text-xs uppercase text-white/60 mb-2 ml-1">Días de Asistencia</label>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-2 cursor-pointer bg-white/10 p-3 rounded-xl w-1/2 border border-white/20 hover:border-[#d99a73] transition-colors">
-                        <input type="checkbox" id="day-1" value="Día 1" class="w-4 h-4 accent-[#d99a73]" onchange="validateDays()">
-                        <span class="text-sm">Día 1</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer bg-white/10 p-3 rounded-xl w-1/2 border border-white/20 hover:border-[#d99a73] transition-colors">
-                        <input type="checkbox" id="day-2" value="Día 2" class="w-4 h-4 accent-[#d99a73]" onchange="validateDays()">
-                        <span class="text-sm">Día 2</span>
-                    </label>
-                </div>
-                <p id="days-error" class="text-red-400 text-xs mt-1 ml-1 hidden">Debes seleccionar al menos un día.</p>
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-white/70 mb-1">Días de asistencia</label>
+                <select id="dias" class="w-full px-4 py-3 rounded-xl bg-[#2b211e] border border-white/10 text-white focus:outline-none focus:border-[#d99a73]">
+                    <option value="Ambos días (3 y 4 Dic)">Ambos días (3 y 4 Dic)</option>
+                    <option value="3 de Dic">Solo 3 de Diciembre</option>
+                    <option value="4 de Dic">Solo 4 de Diciembre</option>
+                </select>
             </div>
-            
-            <button type="submit" id="submit-btn" class="w-full py-4 mt-4 bg-[#6b4c3a] hover:bg-[#4a3427] rounded-xl font-bold shadow-lg text-lg transition-colors">
-                Generar mi Pase QR
+
+            <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-[#6b4c3a] hover:bg-[#d99a73] hover:text-black font-semibold transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-qrcode"></i> Generar mi QR
             </button>
         </form>
 
-        <div id="personal-qr-result" class="hidden mt-6 animate-fade-in flex flex-col items-center">
-            <h3 class="text-xl font-medium text-green-400 mb-2"><i class="fa-solid fa-check-circle"></i> ¡Registro Exitoso!</h3>
-            <p class="text-sm opacity-80 mb-6">Tu código se ha descargado automáticamente. Si no ocurrió, usa el botón de abajo.</p>
-            
-            <div class="bg-white p-4 rounded-3xl inline-block shadow-[0_0_30px_rgba(217,154,115,0.3)] mb-4">
-                <canvas id="qr-canvas"></canvas>
-            </div>
-            
-            <p id="qr-name-display" class="font-medium text-lg"></p>
-            <p id="qr-type-display" class="text-sm text-[#d99a73] mb-1 mt-1 font-semibold"></p>
-            <p id="qr-org-display" class="text-sm opacity-60 mb-6"></p>
-
-            <button onclick="downloadQR()" id="manual-download-btn" class="px-6 py-3 bg-[#d99a73] hover:bg-[#c2845d] text-gray-900 rounded-xl font-bold shadow-lg text-sm transition-colors flex items-center gap-2">
-                <i class="fa-solid fa-download"></i> Descargar Imagen QR
+        <!-- CONTENEDOR DEL QR GENERADO -->
+        <div id="qr-result" class="hidden mt-8 pt-6 border-t border-white/10 text-center">
+            <p class="text-sm text-white/80 mb-4">Muestra este código en la entrada de cada actividad:</p>
+            <div id="qrcode" class="flex justify-center mb-4"></div>
+            <p id="qr-name-label" class="text-lg font-medium text-[#d99a73] mb-4"></p>
+            <button onclick="downloadQR()" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-medium transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> Descargar QR
             </button>
         </div>
     </div>
 
     <script>
-        let currentUserName = "";
-        let qrCanvas = document.getElementById('qr-canvas');
+        const driveUrl = "https://script.google.com/macros/s/AKfycbybEWP1cNPrtsMtxw6VmMeiPPEb3t05YydfmCuolTTyRojupSoyBzmDNyEnlPzGpff0/exec";
 
-        function validateDays() {
-            const day1 = document.getElementById('day-1').checked;
-            const day2 = document.getElementById('day-2').checked;
-            const errorMsg = document.getElementById('days-error');
-            
-            if (!day1 && !day2) {
-                errorMsg.classList.remove('hidden');
-                return false;
-            } else {
-                errorMsg.classList.add('hidden');
-                return true;
+        // Verificar conexión automática al abrir
+        async function checkConnection() {
+            const dbStatus = document.getElementById('db-status');
+            try {
+                const res = await fetch(driveUrl);
+                if (!res.ok) throw new Error("Error");
+                dbStatus.innerText = "Conectado";
+                dbStatus.className = "px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-green-500/20 text-green-400 border border-green-500/30";
+            } catch (err) {
+                dbStatus.innerText = "Sin conexión";
+                dbStatus.className = "px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-red-500/20 text-red-400 border border-red-500/30";
             }
         }
 
-        function generatePersonalQR(e) {
+        document.addEventListener('DOMContentLoaded', checkConnection);
+
+        document.getElementById('qr-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            if (!validateDays()) return;
 
-            const name = document.getElementById('reg-name').value;
-            currentUserName = name;
-            const org = document.getElementById('reg-org').value;
-            const type = document.getElementById('reg-type').value;
-            
-            const day1 = document.getElementById('day-1').checked ? "Día 1" : "";
-            const day2 = document.getElementById('day-2').checked ? "Día 2" : "";
-            const daysAttending = [day1, day2].filter(Boolean).join(" y ");
-            
-            // JSON comprimido para lectura rápida en escáneres móviles
-            const qrData = JSON.stringify({ n: name, o: org, t: type, d: daysAttending });
+            const nombre = document.getElementById('nombre').value.trim();
+            const tipo = document.getElementById('tipo').value;
+            const organizacion = document.getElementById('organizacion').value.trim();
+            const dias = document.getElementById('dias').value;
 
-            // Mostrar vista de resultado
-            document.getElementById('form-general').classList.add('hidden');
-            document.getElementById('personal-qr-result').classList.remove('hidden');
-            
-            document.getElementById('qr-name-display').innerText = name;
-            document.getElementById('qr-type-display').innerText = `${type} | Asiste: ${daysAttending}`;
-            document.getElementById('qr-org-display').innerText = org;
-
-            // Renderizado directo en Canvas (100% fiable)
-            new QRious({
-                element: qrCanvas,
-                value: qrData,
-                size: 250,
-                level: 'H'
+            // Formato exacto que espera el escáner de Control de Staff
+            const qrPayload = JSON.stringify({
+                n: nombre,
+                t: tipo,
+                o: organizacion,
+                d: dias
             });
 
-            // Disparar descarga directa inmediatamente
-            setTimeout(() => {
-                downloadQR();
-            }, 300);
-        }
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: qrPayload,
+                width: 220,
+                height: 220,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            document.getElementById('qr-name-label').innerText = `${nombre} • ${tipo}`;
+            document.getElementById('qr-result').classList.remove('hidden');
+
+            // Registrar la creación del pase en Google Drive
+            const registroInicial = {
+                Nombre: nombre,
+                Tipo: tipo,
+                Organizacion: organizacion,
+                DiasRegistrados: dias,
+                Conferencia: "Registro General (QR)",
+                Dia: dias,
+                Hora: "Generación de QR",
+                Timestamp: new Date().toLocaleString()
+            };
+
+            fetch(driveUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(registroInicial)
+            }).catch(err => console.error("Error al registrar en Drive:", err));
+        });
 
         function downloadQR() {
-            if (!qrCanvas) return;
-            const imageUrl = qrCanvas.toDataURL("image/png");
-            const downloadLink = document.createElement('a');
-            downloadLink.href = imageUrl;
-            downloadLink.download = `Gafete_ForoCiencia_${currentUserName.replace(/\s+/g, '_')}.png`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            const img = document.querySelector('#qrcode img');
+            if (!img) return;
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = `QR_ForoCiencia_${document.getElementById('nombre').value.trim().replace(/\s+/g, '_')}.png`;
+            link.click();
         }
     </script>
 </body>
