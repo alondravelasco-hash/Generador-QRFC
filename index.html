@@ -63,7 +63,6 @@
                     <option value="Ponente">Ponente</option>
                     <option value="Investigador">Investigador</option>
                     <option value="Público General">Público General</option>
-                    <option value="Staff">Staff</option>
                 </select>
             </div>
 
@@ -214,11 +213,13 @@
             });
         });
 
-        document.getElementById('dias').addEventListener('change', function() {
-            const form = document.getElementById('qr-form');
-            if (form.checkValidity()) {
-                form.requestSubmit();
-            }
+        ['tipo', 'dias'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function() {
+                const form = document.getElementById('qr-form');
+                if (form.checkValidity()) {
+                    form.requestSubmit();
+                }
+            });
         });
 
         document.getElementById('download-button').addEventListener('click', descargarQR);
