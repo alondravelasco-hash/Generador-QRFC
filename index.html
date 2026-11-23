@@ -167,27 +167,38 @@
                 t: tipo,
                 o: organizacion,
                 d: dias
+            }).replace(/[\u0080-\uFFFF]/g, function(caracter) {
+                return '\\u' + caracter.charCodeAt(0).toString(16).padStart(4, '0');
             });
 
             const qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = '';
-            new QRCode(qrContainer, {
-                text: qrPayload,
-                width: 220,
-                height: 220,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            try {
+                new QRCode(qrContainer, {
+                    text: qrPayload,
+                    width: 220,
+                    height: 220,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (error) {
+                console.error("No se pudo generar el QR.", error);
+                alert("No se pudo generar el QR. Revisa que el nombre y la organización no sean demasiado largos e inténtalo de nuevo.");
+                return;
+            }
 
             document.getElementById('qr-name-label').innerText = `${nombre} • ${tipo}`;
             document.getElementById('qr-result').classList.remove('hidden');
 
             // Descargar automaticamente despues de que qrcodejs termine de dibujar el PNG.
-            const esperarDescarga = () => {
-                if (!descargarQR()) {
-                    setTimeout(esperarDescarga, 100);
+            const esperarDescarga = (intentosRestantes = 20) => {
+                if (descargarQR()) return;
+                if (intentosRestantes > 0) {
+                    setTimeout(() => esperarDescarga(intentosRestantes - 1), 100);
+                    return;
                 }
+                alert("El QR se generó, pero no se pudo descargar automáticamente. Usa el botón Descargar QR.");
             };
             setTimeout(esperarDescarga, 150);
 
