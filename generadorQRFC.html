@@ -30,6 +30,11 @@
                 <label class="block text-xs uppercase text-white/60 mb-1 ml-1">Nombre Completo</label>
                 <input type="text" id="reg-name" required placeholder="Ej. Ana García" class="light-input">
             </div>
+
+            <div>
+                <label class="block text-xs uppercase text-white/60 mb-1 ml-1">Correo Electrónico</label>
+                <input type="email" id="reg-email" required autocomplete="email" placeholder="Ej. ana@ejemplo.com" class="light-input">
+            </div>
             
             <div>
                 <label class="block text-xs uppercase text-white/60 mb-1 ml-1">Tipo de Asistente</label>
@@ -109,6 +114,7 @@
 
             const name = document.getElementById('reg-name').value;
             currentUserName = name;
+            const email = document.getElementById('reg-email').value.trim();
             const org = document.getElementById('reg-org').value;
             const type = document.getElementById('reg-type').value;
             
@@ -117,7 +123,7 @@
             const daysAttending = [day1, day2].filter(Boolean).join(" y ");
             
             // JSON comprimido para lectura rápida en escáneres móviles
-            const qrData = JSON.stringify({ n: name, o: org, t: type, d: daysAttending });
+            const qrData = JSON.stringify({ n: name, e: email, o: org, t: type, d: daysAttending });
 
             // Mostrar vista de resultado
             document.getElementById('form-general').classList.add('hidden');

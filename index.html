@@ -57,6 +57,11 @@
             </div>
 
             <div>
+                <label class="block text-xs uppercase tracking-wider text-white/70 mb-1">Correo electrónico</label>
+                <input type="email" id="correo" required autocomplete="email" placeholder="Ej. ana@ejemplo.com" class="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-white focus:outline-none focus:border-[#d99a73]">
+            </div>
+
+            <div>
                 <label class="block text-xs uppercase tracking-wider text-white/70 mb-1">Tipo de asistente</label>
                 <select id="tipo" class="w-full px-4 py-3 rounded-xl bg-[#2b211e] border border-white/10 text-white focus:outline-none focus:border-[#d99a73]">
                     <option value="Estudiante">Estudiante</option>
@@ -147,11 +152,12 @@
             e.preventDefault();
 
             const nombre = document.getElementById('nombre').value.trim();
+            const correo = document.getElementById('correo').value.trim();
             const tipo = document.getElementById('tipo').value;
             const organizacion = document.getElementById('organizacion').value.trim();
             const dias = document.getElementById('dias').value;
 
-            if (!nombre || !organizacion) {
+            if (!nombre || !correo || !organizacion) {
                 document.getElementById('qr-form').reportValidity();
                 return;
             }
@@ -164,6 +170,7 @@
             // Formato exacto que espera el escáner de Control de Staff
             const qrPayload = JSON.stringify({
                 n: nombre,
+                e: correo,
                 t: tipo,
                 o: organizacion,
                 d: dias
@@ -205,6 +212,7 @@
             // Registrar la creación del pase en Google Drive
             const registroInicial = {
                 Nombre: nombre,
+                Correo: correo,
                 Tipo: tipo,
                 Organizacion: organizacion,
                 DiasRegistrados: dias,
